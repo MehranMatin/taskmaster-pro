@@ -65,6 +65,8 @@ var auditTask = function(taskEl) {
   else if (Math.abs(moment().diff(time, "days")) <= 2) {
     $(taskEl).addClass("list-group-item-warning");
   }
+
+  console.log(taskEl);
 };
 
 // enable draggable/sortable feature on list-group elements
@@ -134,6 +136,12 @@ $("#trash").droppable({
   }
 });
 
+// convert text field into a jquery date picker
+$("#modalDueDate").datepicker({
+  // force user to select a future date
+  minDate: 1
+});
+
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
   // clear values
@@ -186,14 +194,14 @@ $(".list-group").on("click", "p", function() {
   textInput.trigger("focus");
 });
 
-// Activates when remove focus from <textarea> child of .list-group
+// editable field was un-focused
 $(".list-group").on("blur", "textarea", function() {
-  // get the textarea's current value-text
+  // get current value of textarea
   var text = $(this)
     .val()
     .trim();
 
-  // get the parent's ul's id attribute
+  // get status type and position in the list
   var status = $(this)
     .closest(".list-group")
     .attr("id")
@@ -203,6 +211,7 @@ $(".list-group").on("blur", "textarea", function() {
   var index = $(this)
     .closest(".list-group-item")
     .index();
+    
   // update task in array and re-save to localstorage
   tasks[status][index].text = text;
   saveTasks();
@@ -288,9 +297,11 @@ $("#remove-tasks").on("click", function() {
   saveTasks();
 });
 
-$("#modalDueDate").datepicker({
-  minDate: 1
-});
-
 // load tasks for the first time
 loadTasks();
+
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  });
+}, 1800000);
