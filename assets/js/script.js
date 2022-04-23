@@ -65,8 +65,6 @@ var auditTask = function(taskEl) {
   else if (Math.abs(moment().diff(time, "days")) <= 2) {
     $(taskEl).addClass("list-group-item-warning");
   }
-
-  console.log(taskEl);
 };
 
 // enable draggable/sortable feature on list-group elements
@@ -75,15 +73,15 @@ $(".card .list-group").sortable({
   scroll: false,
   tolerance: 'pointer',
   helper: 'clone',
-  activate: function(event) {
+  activate: function(event, ui) {
     // console.log('activate', this);
     $(this).addClass("dropover");
     $(".bottom-trash").addClass("bottom-trash-drag");
   },
-  deactivate: function(event) {
+  deactivate: function(event, ui) {
     // console.log('deactivate', this);
     $(this).removeClass("dropover");
-    $(".bottom-trash").removeClass(bottom-trash-drag);
+    $(".bottom-trash").removeClass("bottom-trash-drag");
   },
   over: function(event) {
     // console.log('over', event.target);
@@ -91,8 +89,9 @@ $(".card .list-group").sortable({
   },
   out: function(event) {
     // console.log('out', event.target)
-    $(event.target).removeClass("dropover-active");  },
-  update: function(event) {
+    $(event.target).removeClass("dropover-active");
+  },
+  update: function() {
     var tempArr = [];
 
     // loop over current set of children in sortable list 
@@ -132,15 +131,15 @@ $("#trash").droppable({
   drop: function(event, ui) {
     // remove dragged element from the dom
     ui.draggable.remove();
-    $(".bottom-trash").removeClass(bottom-trash-active);
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   over: function(event, ui) {
     console.log(ui);
-    $(".bottom-trash").addClass(bottom-trash-active);
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event, ui) {
     console.log(ui);
-    $(".bottom-trash").removeClass(bottom-trash-active);
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 
@@ -194,7 +193,6 @@ $(".list-group").on("click", "p", function() {
   var textInput = $("<textarea>")
   .addClass("form-control")
   .val(text);
-
   // Changes the <p> text into a textbox when clicked
   $(this).replaceWith(textInput);
   
@@ -301,7 +299,7 @@ $("#remove-tasks").on("click", function() {
     tasks[key].length = 0;
     $("#list-" + key).empty();
   }
-  console.log("tasks");
+  console.log(tasks);
   saveTasks();
 });
 
@@ -309,7 +307,7 @@ $("#remove-tasks").on("click", function() {
 loadTasks();
 
 setInterval(function() {
-  $(".card .list-group-item").each(function(index, el) {
-    auditTask(el);
+  $(".card .list-group-item").each(function() {
+    auditTask($(this));
   });
 }, 1800000);
